@@ -48,6 +48,7 @@ function App() {
     {id:1, title:'HTML', desc:'HTML is ...'},
     {id:2, title:'CSS', desc:'CSS is ...'}
   ]);
+  var [nextId, setNextId] = useState(3);
 
   function onChangeModeHeader(){
     console.log('onChangeModeHeader');
@@ -87,14 +88,22 @@ function App() {
     // ... : 는 복제를 나타내는 최신 문법이다. 
     // 추가를 하려면 새로운 배열을 복제하여 추가 해서 setState를 사용해야 한다.
     // 복제를 안하고 그냥 하면 랜더링이 안됨
-    
+
     var newTopics = [...topics];
     newTopics.push({
-      "id": 3,
+      "id": nextId,
       "title": title,
       "desc": desc
     });
+
     setTopics(newTopics);
+    setNextId(nextId+1);
+
+    // setTopics([...topics,{
+    //   "id":3,
+    //   "title":title,
+    //   "desc":desc
+    // }]
   }
 
     article = (
@@ -132,3 +141,9 @@ function Control(props){
 }
 
 export default App;
+
+/* 컴포넌트가 렌더링이 되는 경우
+
+  · 부모 컴포넌트가 렌더링 됐을 때
+  · props에 변경됐을 때
+  · state가 변경됐을 때*/
