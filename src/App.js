@@ -44,25 +44,30 @@ function App() {
   console.log('App render');
   var [mode, setMode] = useState('READ');
   var [id, setId] = useState(1);
-  var topics = [
+  var [topics, setTopics] = useState([
     {id:1, title:'HTML', desc:'HTML is ...'},
     {id:2, title:'CSS', desc:'CSS is ...'}
-  ];
+  ]);
+
   function onChangeModeHeader(){
     console.log('onChangeModeHeader');
     setMode('WELCOME');
   }
+
   function onChangeModeNav(id){
     console.log('onChangeModeNav', id);
     setMode('READ');
     setId(id);
     // id값에 따른 UI를 변경하는 코드 
   }
+
   function onChangeModeControl(_mode){
     console.log('onChangeModeControl', _mode);
     setMode(_mode);
   }
+
   var article = null;
+
   if(mode === 'WELCOME'){
     article = <ReadTag title="Weclome" desc="Hello, WEB"></ReadTag>
   } else if(mode === 'READ'){
@@ -73,11 +78,32 @@ function App() {
       }
     }
   } else if(mode === 'CREATE'){
+    
+  function onSubmitHandler(e) {
+    e.preventDefault();
+    var title = e.target.title.value;
+    var desc = e.target.desc.value;
+
+    // ... : 는 복제를 나타내는 최신 문법이다. 
+    // 추가를 하려면 새로운 배열을 복제하여 추가 해서 setState를 사용해야 한다.
+    // 복제를 안하고 그냥 하면 랜더링이 안됨
+    
+    var newTopics = [...topics];
+    newTopics.push({
+      "id": 3,
+      "title": title,
+      "desc": desc
+    });
+    setTopics(newTopics);
+  }
+
     article = (
-      <form>
+      // onSubmit은 form태그에 다는 것으로 약속
+      <form onSubmit={onSubmitHandler}>
         <h2>Create</h2>
-        <input type="text" placeholder="title"></input>
-        <textarea placeholder="description"></textarea>
+          <p><input name = "title" type="text" placeholder="title"></input></p>
+          <p><textarea name ="desc" placeholder="description"></textarea></p>
+          <p><input type="submit"></input></p>
       </form>
     )
   } else if(mode === 'UPDATE'){
