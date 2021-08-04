@@ -39,10 +39,61 @@ function ReadTag(props){
     </article>
   )
 }
+
+function Create(props){
+  return (
+    <form onSubmit={e=>{
+      e.preventDefault();
+      var title = e.target.title.value;
+      var desc = e.target.desc.value;
+      props.onCreate({
+        title:title,
+        desc:desc
+      });
+    }}>
+      <h2>Create</h2>
+      <p><input name="title" type="text" placeholder="title"></input></p>
+      <p><textarea name="desc" placeholder="description"></textarea></p>
+      <p><input type="submit"></input></p>
+    </form>
+  )
+}
+
+//  create를 그대로 가져옴
+function Update(props){
+  var [title, setTitle] = useState(props.title);
+  var [desc, setDesc] = useState(props.desc);
+  return (
+    <form onSubmit={e=>{
+      e.preventDefault();
+      var title = e.target.title.value;
+      var desc = e.target.desc.value;
+      props.onUpdate({
+        title:title,
+        desc:desc
+      });
+    }}>
+      <h2>Update</h2>
+      <p>
+      
+        <input 
+          // input 태그에서 value값에  변수를 주면 해당 변수로 값이 고정됨
+          name="title" 
+          type="text" 
+          placeholder="title" 
+          onChange={e=>setTitle(e.target.value)} 
+          value={title}></input></p>
+      <p><textarea onChange={e=>setDesc(e.target.value)} name="desc" placeholder="description" value={desc}></textarea></p>
+      
+      <p><input type="submit"></input></p>
+    </form>
+  )
+}
+
 function App() {
   // debugger;
   console.log('App render');
-  var [mode, setMode] = useState('READ');
+  var [mode, setMode] = useState('CREATE');
   var [id, setId] = useState(1);
   var [topics, setTopics] = useState([
     {id:1, title:'HTML', desc:'HTML is ...'},
@@ -57,9 +108,10 @@ function App() {
 
   function onChangeModeNav(id){
     console.log('onChangeModeNav', id);
+    // id값에 따른 UI를 변경하는 코드 
     setMode('READ');
     setId(id);
-    // id값에 따른 UI를 변경하는 코드 
+    
   }
 
   function onChangeModeControl(_mode){
@@ -80,43 +132,42 @@ function App() {
     }
   } else if(mode === 'CREATE'){
     
-  function onSubmitHandler(e) {
-    e.preventDefault();
-    var title = e.target.title.value;
-    var desc = e.target.desc.value;
+    article = <Create onCreate={data=>{
+      var newTopics = [...topics];
+      newTopics.push({
+        "id": nextId,
+        "title": data.title,
+        "desc": data.desc
+      });
+  
+      setTopics(newTopics);
+      setMode('READ');  
+      setId(nextId);
+      setNextId(nextId+1);
+    }}></Create>
 
-    // ... : 는 복제를 나타내는 최신 문법이다. 
-    // 추가를 하려면 새로운 배열을 복제하여 추가 해서 setState를 사용해야 한다.
-    // 복제를 안하고 그냥 하면 랜더링이 안됨
-
-    var newTopics = [...topics];
-    newTopics.push({
-      "id": nextId,
-      "title": title,
-      "desc": desc
-    });
-
-    setTopics(newTopics);
-    setNextId(nextId+1);
-
-    // setTopics([...topics,{
-    //   "id":3,
-    //   "title":title,
-    //   "desc":desc
-    // }]
-  }
-
-    article = (
-      // onSubmit은 form태그에 다는 것으로 약속
-      <form onSubmit={onSubmitHandler}>
-        <h2>Create</h2>
-          <p><input name = "title" type="text" placeholder="title"></input></p>
-          <p><textarea name ="desc" placeholder="description"></textarea></p>
-          <p><input type="submit"></input></p>
-      </form>
-    )
   } else if(mode === 'UPDATE'){
-    article = <div>Update</div>
+    for(var i=0; i<topics.length; i++){
+      if(topics[i].id === id){
+        article = <Update title={topics[i].title} desc={topics[i].desc} onUpdate={data=>{
+          console.log('update', data);
+          var newTopics = [...topics];
+          for(var i=0; i<newTopics.length; i++){
+            if(newTopics[i].id === id){
+              newTopics[i] = {
+                "id": newTopics[i].id,
+                "title": data.title,
+                "desc": data.desc
+              }
+            }
+          }
+          setTopics(newTopics);
+          setMode('READ');
+        }}></Update>
+        break;
+      }
+    }
+
   }
   return (
     <div>
