@@ -75,7 +75,6 @@ function Update(props){
     }}>
       <h2>Update</h2>
       <p>
-      
         <input 
           // input 태그에서 value값에  변수를 주면 해당 변수로 값이 고정됨
           name="title" 
@@ -84,7 +83,6 @@ function Update(props){
           onChange={e=>setTitle(e.target.value)} 
           value={title}></input></p>
       <p><textarea onChange={e=>setDesc(e.target.value)} name="desc" placeholder="description" value={desc}></textarea></p>
-      
       <p><input type="submit"></input></p>
     </form>
   )
@@ -115,8 +113,18 @@ function App() {
   }
 
   function onChangeModeControl(_mode){
-    console.log('onChangeModeControl', _mode);
-    setMode(_mode);
+    if(_mode==='DELETE'){
+      var newTopics = [];
+      for(var i=0; i<topics.length; i++){
+        if(topics[i].id === id){
+        } else {
+          newTopics.push(topics[i]);
+        }
+      }
+      setTopics(newTopics);
+    } else {
+      setMode(_mode);
+    }
   }
 
   var article = null;
@@ -181,13 +189,14 @@ function App() {
 function Control(props){
   function clickHandler(e){
     e.preventDefault();
+
     props.onChangeMode(e.target.dataset.mode);
   }
   return (
     <div>
       <a href="/create" data-mode="CREATE" onClick={clickHandler}>create</a> | 
       <a href="/update" data-mode="UPDATE" onClick={clickHandler}>update</a> | 
-      <input type="button" value="DELETE" data-mode="delete" onClick={clickHandler}></input>
+      <input type="button" value="DELETE" data-mode="DELETE" onClick={clickHandler}></input>
     </div>);
 }
 
